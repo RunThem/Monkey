@@ -46,8 +46,21 @@ func (l *Lexer) readIdentifier() string {
 	return l.input[pos:l.position]
 }
 
+func (l *Lexer) readInteger() string {
+	pos := l.position
+	for u.IsDigit(l.ch) {
+		l.readChar()
+	}
+
+	return l.input[pos:l.position]
+}
+
 func (l *Lexer) NextTokne() token.Token {
 	var tok token.Token
+
+	for u.IsSpace(l.ch) {
+		l.readChar()
+	}
 
 	switch l.ch {
 	case '=':
@@ -99,6 +112,10 @@ func (l *Lexer) NextTokne() token.Token {
 		if isLetter(l.ch) {
 			tok.Literal = l.readIdentifier()
 			tok.Type = token.LookupIdent(tok.Literal)
+			return tok
+		} else if u.IsDigit(l.ch) {
+			tok.Literal = l.readInteger()
+			tok.Type = token.INT
 			return tok
 		} else {
 			tok = newToken(token.ILLEGAL, l.ch)
