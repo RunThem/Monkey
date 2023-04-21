@@ -3,6 +3,7 @@ package ast
 import (
 	"Monkey/token"
 	"bytes"
+	"strings"
 )
 
 type Node interface {
@@ -199,3 +200,130 @@ func (i *InfixExpression) expressionNode() {}
 func (i *InfixExpression) TokenLiteral() string {
 	return i.Token.Literal
 }
+
+// Boolean
+type Boolean struct {
+	Token token.Token
+	Value bool
+}
+
+func (b *Boolean) String() string {
+	return b.Token.Literal
+}
+
+func (b *Boolean) expressionNode() {}
+
+func (b *Boolean) TokenLiteral() string {
+	return b.Token.Literal
+}
+
+// IfExpression
+type IfExpression struct {
+	Token       token.Token
+	Condition   Expression
+	Consequence *BlockStatement
+	Alternative *BlockStatement
+}
+
+func (i *IfExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("if")
+	out.WriteString(i.Condition.String())
+	out.WriteString(" ")
+	out.WriteString(i.Consequence.String())
+
+	if i.Alternative != nil {
+		out.WriteString(" else ")
+		out.WriteString(i.Alternative.String())
+	}
+
+	return out.String()
+}
+
+func (i *IfExpression) expressionNode() {}
+
+func (i *IfExpression) TokenLiteral() string {
+	return i.Token.Literal
+}
+
+// BlockStatement
+type BlockStatement struct {
+	Token      token.Token
+	Statements []Statement
+}
+
+func (b *BlockStatement) String() string {
+	var out bytes.Buffer
+
+	for _, s := range b.Statements {
+		out.WriteString(s.String())
+	}
+
+	return out.String()
+}
+
+func (b *BlockStatement) statementNode() {}
+
+func (b *BlockStatement) TokenLiteral() string {
+	return b.Token.Literal
+}
+
+type FunctionLiteral struct {
+	Token      token.Token
+	Parameters []*Identifier
+	Body       *BlockStatement
+}
+
+func (f *FunctionLiteral) TokenLiteral() string {
+	return f.Token.Literal
+}
+
+func (f *FunctionLiteral) String() string {
+	var out bytes.Buffer
+
+	params := []string{}
+	for _, p := range f.Parameters {
+		params = append(params, p.String())
+	}
+
+	out.WriteString(f.TokenLiteral())
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(") ")
+	out.WriteString(f.Body.String())
+
+	return out.String()
+}
+
+func (f *FunctionLiteral) expressionNode() {
+	//TODO implement me
+	panic("implement me")
+}
+
+// CallExpression
+type CallExpression struct {
+	Token     token.Token // '('词法单元
+	Function  Expression  // 标识符或函数字面量
+	Arguments []Expression
+}
+
+func (ce *CallExpression) String() string {
+	var out bytes.Buffer
+
+	args := []string{}
+	for _, a := range ce.Arguments {
+		args = append(args, a.String())
+	}
+
+	out.WriteString(ce.Function.String())
+	out.WriteString("(")
+	out.WriteString(strings.Join(args, ", "))
+	out.WriteString(")")
+
+	return out.String()
+}
+
+func (ce *CallExpression) expressionNode() {}
+
+func (ce *CallExpression) TokenLiteral() string { return ce.Token.Literal }
