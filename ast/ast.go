@@ -228,7 +228,7 @@ type IfExpression struct {
 func (i *IfExpression) String() string {
 	var out bytes.Buffer
 
-	out.WriteString("if")
+	out.WriteString("if ")
 	out.WriteString(i.Condition.String())
 	out.WriteString(" ")
 	out.WriteString(i.Consequence.String())
