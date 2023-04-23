@@ -1,6 +1,7 @@
 package repl
 
 import (
+	"Monkey/evaluator"
 	"Monkey/lexer"
 	"Monkey/parser"
 	"bufio"
@@ -25,6 +26,9 @@ func Start(in io.Reader, out io.Writer) {
 		parser := parser.New(lexer)
 		program := parser.ParseProgram()
 
+		obj := evaluator.Eval(program)
+
 		fmt.Println(program.String())
+		fmt.Println(obj)
 	}
 }
